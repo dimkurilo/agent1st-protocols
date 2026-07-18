@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- README install: copy agents with **distinct filenames** into `~/.config/opencode/agents/A/` (not one shared `agent1st.md`).
+- README install: `~/.config/opencode/agents/` with **distinct filenames** (no personal `A/` subfolder in public docs; not one shared `agent1st.md`).
+- Document harness-bench-fast results: Agent1st v33 Flash 311/313, v10 GLM 312/313 — links to [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) / [#12](https://github.com/ai-forever/harness-bench-fast/issues/12), baseline comparison, `docs/benchmarks.md`.
 
 ## 0.1.0 — 2026-07-18
 

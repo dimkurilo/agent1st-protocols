@@ -24,7 +24,31 @@ Agent1st — это:
 
 1. **System protocol** — operational rules для агента (режимы, confirmation gate, evidence, stop-signals).
 2. **Prompt guides** — как человеку писать задачи, чтобы модель не тратила thinking на разбор простыни.
-3. ** empirically grounded** — версии эволюционировали через transition docs, A/B и log analysis (см. [docs/why-it-works.md](docs/why-it-works.md)).
+3. **Проверено на бенчмарке** — линейка Agent1st гонялась на [harness-bench-fast](https://github.com/ai-forever/harness-bench-fast) (см. [результаты ниже](#результаты-harness-bench-fast) и [docs/benchmarks.md](docs/benchmarks.md)).
+
+---
+
+## Результаты harness-bench-fast
+
+Публичные прогоны на [ai-forever/harness-bench-fast](https://github.com/ai-forever/harness-bench-fast) — mechanical verify, без LLM-as-judge. Harness: **OpenCode CLI** + Agent1st.
+
+| Протокол (прогон) | Модель | Result | % | Issue |
+|-------------------|--------|--------|---|-------|
+| **agent1st_v33** (DeepSeek) | DeepSeek V4 Flash | **311/313** | **99.4%** | [#11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
+| **agent1st_v10-glm** | GLM 5.2 (z.ai) | **312/313** | **99.7%** | [#12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+
+### Сравнение с baseline того же бенчмарка
+
+| Harness / setup | Модель | Result | % | Источник |
+|-----------------|--------|--------|---|----------|
+| deepagents (stock, README bench) | DeepSeek V4 Flash | 266/298 | 89.3% | [README harness-bench-fast](https://github.com/ai-forever/harness-bench-fast#current-results) |
+| **opencode CLI + Agent1st v33** | DeepSeek V4 Flash | **311/313** | **99.4%** | [#11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
+| openclaude | GLM 5.2 | 309/313 | 98.7% | cited in [#12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+| **opencode CLI + Agent1st v10-glm** | GLM 5.2 | **312/313** | **99.7%** | [#12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+
+**Честно про версии:** полный 313-task suite снят на **предшественниках** публикуемых файлов (v33 Flash, v10 GLM). В этом репозитории лежат **v36** (DeepSeek) и **v13** (GLM) — та же линейка Agent1st, следующие итерации (vision bridge и discipline). Свежий full re-bench v36/v13 на 313 задачах пока не выложен; частичные прогоны v35 есть локально, но не как public claim.
+
+Подробности, failures, waves: [docs/benchmarks.md](docs/benchmarks.md).
 
 ---
 
@@ -32,18 +56,17 @@ Agent1st — это:
 
 ### 1. Поставить system instruction
 
-OpenCode подхватывает **каждый** `.md` в `~/.config/opencode/agents/` (у нас — в подпапке `A/`) как отдельного агента. Имя файла = имя агента: **не** сводите все протоколы к одному `agent1st.md`, иначе они перезапишут друг друга.
+OpenCode подхватывает **каждый** `.md` в каталоге агентов как отдельного агента. Имя файла = имя агента — **не** сводите три протокола к одному `agent1st.md`.
+
+**Публикуемый путь (как в OpenCode):**
 
 ```bash
-# можно поставить все три сразу — у каждого своё имя
-mkdir -p ~/.config/opencode/agents/A
+mkdir -p ~/.config/opencode/agents
 
-cp agents/deepseek/agent1st_v36-pro.md   ~/.config/opencode/agents/A/
-cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/A/
-cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/A/
+cp agents/deepseek/agent1st_v36-pro.md   ~/.config/opencode/agents/
+cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/
+cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/
 ```
-
-После копирования в списке агентов будут три разных профиля:
 
 | Файл | Агент |
 |------|--------|
@@ -51,8 +74,11 @@ cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/A/
 | `agent1st_v36-flash.md` | DeepSeek V4 Flash |
 | `agent1st_v13-glm.md` | GLM 5.2 |
 
-Нужен только один — копируйте только его.  
-Другой runtime (не OpenCode): вставьте тело протокола как system prompt; frontmatter (model, temperature, tools) оставьте или адаптируйте под свой CLI.
+Нужен только один — копируйте только его.
+
+Подпапки вроде `A/`, `M/` — **личная** раскладка (разделить engineering / marketing и т.п.), не требование OpenCode и не часть этой инструкции. Если у вас уже так устроено — копируйте в свою подпапку; для публичного README достаточно `~/.config/opencode/agents/`.
+
+Другой runtime (не OpenCode): вставьте тело протокола как system prompt; frontmatter (model, temperature, tools) оставьте или адаптируйте.
 
 ### 2. Писать задачи по гайду
 
@@ -81,7 +107,8 @@ agent1st-protocols/
 │   ├── kak-pisat-zaprosy-dlya-glm-5.2.md
 │   └── deepseek-injection-block.md
 ├── docs/
-│   └── why-it-works.md              # основания: на чём строится
+│   ├── why-it-works.md              # основания: на чём строится
+│   └── benchmarks.md                # harness-bench-fast results + comparison
 ├── README.md
 ├── README.en.md
 ├── CHANGELOG.md
@@ -122,8 +149,9 @@ Skills ≠ agent system prompts. Смешивать их в одном root cata
 - **DeepSeek V4:** thinking modes (Non-think / High / Max), `reasoning_effort`, IndexShare / Preserved Thinking constraints, injection block `【思维模式要求】`, discipline против mode collapse и «commentary instead of execution».
 - **GLM 5.2:** thinking on/off + `reasoning_effort` (не текстом system prompt), temperature=1.0, failure modes (fabrication, tool passivity, long-session drift), 1M-context continuity.
 - **Общее ядро Agent1st:** confirmation gate, path-is-clear, evidence file:line, smallest effective change, positive-action discipline.
+- **Измерения:** full suite harness-bench-fast — v33 Flash 311/313, v10 GLM 312/313 ([#11](https://github.com/ai-forever/harness-bench-fast/issues/11), [#12](https://github.com/ai-forever/harness-bench-fast/issues/12)).
 
-Подробнее: [docs/why-it-works.md](docs/why-it-works.md).
+Подробнее: [docs/why-it-works.md](docs/why-it-works.md), [docs/benchmarks.md](docs/benchmarks.md).
 
 ---
 

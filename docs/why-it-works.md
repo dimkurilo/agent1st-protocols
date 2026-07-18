@@ -120,3 +120,18 @@ Text-only модели + OpenCode:
 | Injection block | current | DeepSeek engineering thinking |
 
 Если нужна история эволюции — это research, не install path.
+
+---
+
+## 8. Public bench (harness-bench-fast)
+
+Full-suite public scores (Agent1st lineage, OpenCode CLI):
+
+| Measured protocol | Model | Score | Issue |
+|-------------------|-------|-------|-------|
+| v33 DeepSeek | DeepSeek V4 Flash | 311/313 (99.4%) | [#11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
+| v10 GLM | GLM 5.2 | 312/313 (99.7%) | [#12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+
+vs stock deepagents DeepSeek V4 Flash 266/298 (89.3%) in upstream README; vs openclaude GLM 5.2 309/313 (98.7%).
+
+Details and caveats (task-set 298 vs 313, v36/v13 not re-scored on full suite): [benchmarks.md](benchmarks.md).
