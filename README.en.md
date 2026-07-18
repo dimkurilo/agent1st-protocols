@@ -14,8 +14,25 @@ This is **not** a skills repo. Skills live in [opencode-skills](https://github.c
 
 ## Quick start
 
-1. Copy the agent file into your CLI agent config (OpenCode frontmatter is included; adapt if needed).
-2. Write tasks using the matching guide under `guides/`.
+OpenCode loads **each** `.md` under `~/.config/opencode/agents/` (here: `A/`) as a **separate** agent. Keep the original filenames — do **not** rename all three to one `agent1st.md` (they would overwrite each other).
+
+```bash
+mkdir -p ~/.config/opencode/agents/A
+
+cp agents/deepseek/agent1st_v36-pro.md   ~/.config/opencode/agents/A/
+cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/A/
+cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/A/
+```
+
+| File | Agent |
+|------|--------|
+| `agent1st_v36-pro.md` | DeepSeek V4 Pro |
+| `agent1st_v36-flash.md` | DeepSeek V4 Flash |
+| `agent1st_v13-glm.md` | GLM 5.2 |
+
+Install only the one(s) you need. Frontmatter is OpenCode-oriented; adapt for other CLIs.
+
+Then write tasks with the matching guide under `guides/`.
 
 ## Core vs Vision Bridge
 

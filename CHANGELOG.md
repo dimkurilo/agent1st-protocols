@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- README install: copy agents with **distinct filenames** into `~/.config/opencode/agents/A/` (not one shared `agent1st.md`).
+
 ## 0.1.0 — 2026-07-18
 
 Initial public package (local staging; remote name provisional: `agent1st-protocols`).

@@ -32,22 +32,27 @@ Agent1st — это:
 
 ### 1. Поставить system instruction
 
-Скопируйте нужный файл в agent config вашего CLI (OpenCode / Codex / аналог) или вставьте как system prompt.
-
-**OpenCode** (пример):
+OpenCode подхватывает **каждый** `.md` в `~/.config/opencode/agents/` (у нас — в подпапке `A/`) как отдельного агента. Имя файла = имя агента: **не** сводите все протоколы к одному `agent1st.md`, иначе они перезапишут друг друга.
 
 ```bash
-# DeepSeek V4 Pro
-cp agents/deepseek/agent1st_v36-pro.md ~/.config/opencode/agents/A/agent1st.md
+# можно поставить все три сразу — у каждого своё имя
+mkdir -p ~/.config/opencode/agents/A
 
-# DeepSeek V4 Flash
-cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/A/agent1st.md
-
-# GLM 5.2
-cp agents/glm/agent1st_v13-glm.md ~/.config/opencode/agents/A/agent1st.md
+cp agents/deepseek/agent1st_v36-pro.md   ~/.config/opencode/agents/A/
+cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/A/
+cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/A/
 ```
 
-Frontmatter в файлах (model, temperature, tools) рассчитан на OpenCode. Если ваш runtime другой — оставьте тело протокола, frontmatter адаптируйте.
+После копирования в списке агентов будут три разных профиля:
+
+| Файл | Агент |
+|------|--------|
+| `agent1st_v36-pro.md` | DeepSeek V4 Pro |
+| `agent1st_v36-flash.md` | DeepSeek V4 Flash |
+| `agent1st_v13-glm.md` | GLM 5.2 |
+
+Нужен только один — копируйте только его.  
+Другой runtime (не OpenCode): вставьте тело протокола как system prompt; frontmatter (model, temperature, tools) оставьте или адаптируйте под свой CLI.
 
 ### 2. Писать задачи по гайду
 
