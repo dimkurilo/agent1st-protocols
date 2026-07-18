@@ -76,8 +76,6 @@ cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/
 
 Нужен один агент - копируйте только его.
 
-Подпапки вроде `A/` и `M/` - личная организация, например чтобы разделить engineering и marketing агентов. Это не требование OpenCode и не часть публичной инструкции. Для обычной установки достаточно `~/.config/opencode/agents/`.
-
 Другой runtime: вставьте тело файла как системную инструкцию (system prompt). Frontmatter с model, temperature и tools оставьте или адаптируйте под свой CLI.
 
 ### 2. Писать задачи по гайду

@@ -46,8 +46,6 @@ cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/
 cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/
 ```
 
-Personal subfolders such as `A/` or `M/` are optional local organization. They are not required by OpenCode or this guide.
-
 For other runtimes, paste the file body as a system prompt and adapt the frontmatter.
 
 ## Notes

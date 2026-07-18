@@ -5,7 +5,7 @@
 - Optional Vision Bridge: link runtime to [vision-bridge-opencode](https://github.com/dimkurilo/vision-bridge-opencode); protocols keep discipline only.
 - Canonical GitHub remote: `https://github.com/dimkurilo/agent1st-protocols` (no leading hyphen).
 - Humanize public docs: README, benchmark notes, rationale and guides.
-- README install: `~/.config/opencode/agents/` with distinct filenames (no personal `A/`; not one shared `agent1st.md`).
+- README install: `~/.config/opencode/agents/` with distinct filenames (not one shared `agent1st.md`).
 - harness-bench-fast: Agent1st v33 Flash 311/313, v10 GLM 312/313 - [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) / [#12](https://github.com/ai-forever/harness-bench-fast/issues/12), `docs/benchmarks.md`.
 
 ## 0.1.0 - 2026-07-18
