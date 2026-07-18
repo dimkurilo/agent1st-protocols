@@ -2,13 +2,15 @@
 
 ## Unreleased
 
+- Optional Vision Bridge: link runtime to [vision-bridge-opencode](https://github.com/dimkurilo/vision-bridge-opencode); protocols keep discipline only.
+- Canonical GitHub remote: `https://github.com/dimkurilo/agent1st-protocols` (no leading hyphen).
 - Humanize public docs: README, benchmark notes, rationale and guides.
-- README install: `~/.config/opencode/agents/` with **distinct filenames** (no personal `A/` subfolder in public docs; not one shared `agent1st.md`).
-- Document harness-bench-fast results: Agent1st v33 Flash 311/313, v10 GLM 312/313 - links to [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) / [#12](https://github.com/ai-forever/harness-bench-fast/issues/12), baseline comparison, `docs/benchmarks.md`.
+- README install: `~/.config/opencode/agents/` with distinct filenames (no personal `A/`; not one shared `agent1st.md`).
+- harness-bench-fast: Agent1st v33 Flash 311/313, v10 GLM 312/313 - [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) / [#12](https://github.com/ai-forever/harness-bench-fast/issues/12), `docs/benchmarks.md`.
 
 ## 0.1.0 - 2026-07-18
 
-Initial public package (local staging; remote name provisional: `agent1st-protocols`).
+Initial public package.
 
 ### Agents
 - DeepSeek V4 Pro - `agent1st_v36-pro.md`
@@ -23,3 +25,4 @@ Initial public package (local staging; remote name provisional: `agent1st-protoc
 ### Docs
 - README (RU) + README.en.md
 - `docs/why-it-works.md` - design rationale for public consumers
+- `docs/benchmarks.md` - harness-bench-fast evidence

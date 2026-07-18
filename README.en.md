@@ -30,7 +30,9 @@ Baselines for the same models:
 | openclaude | GLM 5.2 | 309/313 (98.7%) | cited in [issue #12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
 | OpenCode CLI with Agent1st v10-glm | GLM 5.2 | **312/313 (99.7%)** | [issue #12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
 
-Published files are `v36` and `v13`, lineage successors of the measured `v33` and `v10`. The exact files in this tree have not yet been claimed as a public 313-task full-suite re-bench. Details: [docs/benchmarks.md](docs/benchmarks.md).
+Published files are `v36` and `v13`, lineage successors of the measured `v33` and `v10` (newer discipline plus optional Vision Bridge sections). The exact files in this tree have not yet been claimed as a public 313-task full-suite re-bench. Details: [docs/benchmarks.md](docs/benchmarks.md).
+
+Vision runtime is separate: [vision-bridge-opencode](https://github.com/dimkurilo/vision-bridge-opencode). Without it, agents stay text-only.
 
 ## Install
 
@@ -50,6 +52,6 @@ For other runtimes, paste the file body as a system prompt and adapt the frontma
 
 ## Notes
 
-Core protocol works without vision. `v36` and `v13` include optional Vision Bridge sections for OpenCode text-only models: `opencode-eyesight` and `describe_image`.
+Core protocol works without vision. `v36` / `v13` include optional Vision Bridge *discipline* in the system prompt (`opencode-eyesight` overview + `describe_image`). Install the runtime from **[vision-bridge-opencode](https://github.com/dimkurilo/vision-bridge-opencode)** if you need images; ignore or strip vision sections otherwise.
 
 Design rationale: [docs/why-it-works.md](docs/why-it-works.md). License: [MIT](LICENSE).

@@ -30,8 +30,8 @@ Landing page бенчмарка: <https://ai-forever.github.io/harness-bench-fas
 
 | Published here | Full-suite measured on | Note |
 |----------------|------------------------|------|
-| `agent1st_v36-flash.md` / `agent1st_v36-pro.md` | `agent1st_v33` Flash, 311/313 | `v36` - successor в той же DeepSeek lineage; Vision Bridge optional |
-| `agent1st_v13-glm.md` | `agent1st_v10-glm`, 312/313 | `v13` - successor в той же GLM lineage; Vision Bridge optional |
+| `agent1st_v36-flash.md` / `agent1st_v36-pro.md` | `agent1st_v33` Flash, 311/313 | `v36` - successor той же DeepSeek lineage; optional Vision Bridge sections (runtime: [vision-bridge-opencode](https://github.com/dimkurilo/vision-bridge-opencode)) |
+| `agent1st_v13-glm.md` | `agent1st_v10-glm`, 312/313 | `v13` - successor той же GLM lineage; optional Vision Bridge sections (runtime: [vision-bridge-opencode](https://github.com/dimkurilo/vision-bridge-opencode)) |
 
 Мы не заявляем, что exact file bytes `v36` и `v13` уже прогнаны на всех 313 задачах в публичном issue. Эти числа доказывают результат protocol family на тех же моделях, а не новый score для текущих файлов.
 
