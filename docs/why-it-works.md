@@ -1,35 +1,35 @@
 # Почему эти инструкции работают
 
-Краткая публичная выжимка оснований. Полный research trail (transition docs, A/B, session logs) живёт в приватной research-папке; сюда — только то, что объясняет дизайн для пользователя репозитория.
+Это короткая публичная выжимка. Полный research trail, transition docs, A/B и session logs остаются в приватной research-папке. Здесь только то, что помогает понять дизайн published agents.
 
 ---
 
-## 1. Разные модели — разные протоколы
+## 1. Разные модели, разные протоколы
 
 | | DeepSeek V4 | GLM 5.2 |
 |--|-------------|---------|
-| Thinking control | Non-think / High / Max + `reasoning_effort` | on/off + `reasoning_effort` (текст system prompt **не** переключает thinking) |
-| Temperature | 0.25 (имеет смысл в non-think) | 1.0 (типичный default для GLM agentic) |
-| Context | большой, но без «1M continuity» как у GLM | 1M-context state continuity — long-horizon discipline |
-| Частые failure modes | commentary вместо execution; mode collapse; слабая дисциплина injection | fabrication; tool passivity; long-session drift |
+| Thinking control | Non-think / High / Max через `reasoning_effort` | on/off и `reasoning_effort`; текст system prompt thinking не переключает |
+| Temperature | 0.25, в основном для non-think | 1.0, типичный default для GLM agentic |
+| Context | большой, но без GLM-style 1M continuity | 1M context continuity для длинной траектории |
+| Частые failure modes | commentary вместо execution, mode collapse, слабая discipline injection | fabrication, tool passivity, long-session drift |
 
-Один generic «coding agent» prompt под обе модели даёт хуже результат, чем model-specific Agent1st.
+Один generic coding-agent prompt под обе модели работает хуже, чем model-specific Agent1st. DeepSeek нужно жёстче вести по режимам thinking. GLM нужно давать структуру задачи и не пытаться управлять thinking текстом.
 
 ---
 
-## 2. Ядро Agent1st (общее)
+## 2. Общее ядро Agent1st
 
-Независимо от модели:
+Независимо от модели протокол держит несколько инвариантов:
 
-1. **Shipped working results** — цель = работающий результат, не красивый разбор.
-2. **Smallest effective change** — минимальное изменение, которое закрывает задачу.
-3. **Confirmation gate** — на non-trivial задачах plan → user go → first modifying call.
-4. **Path is clear** — только trivial **или** явный go; иначе не «улучшаю по дороге».
-5. **Evidence-first** — file:line / command output, не «похоже, что».
-6. **Positive-action discipline** — запреты формулируются как «делай X вместо Y», чтобы модель не залипала в negative space.
-7. **Stop-signals** — явные остановки против overthinking и бесконечного exploration.
+1. Shipped working results: цель - рабочий результат, а не красивый разбор.
+2. Smallest effective change: минимальное изменение, которое закрывает задачу.
+3. Confirmation gate: на non-trivial задачах сначала plan, потом explicit go, потом первый modifying call.
+4. Path is clear: trivial task или явный go; иначе агент не расширяет задачу по дороге.
+5. Evidence-first: file:line и command output вместо «похоже, что».
+6. Positive-action discipline: запрет связывается с положительным действием, чтобы модель не залипала в negative space.
+7. Stop signals: явные остановки против overthinking и бесконечного exploration.
 
-Эти правила бьют по общим agentic failure modes: tool spam, silent scope creep, fake confidence.
+Эти правила бьют по типовым агентным сбоям (agentic failure modes): tool spam, silent scope creep, fake confidence.
 
 ---
 
@@ -38,100 +38,106 @@
 ### 3.1 Thinking modes как execution lanes
 
 | Lane | Thinking | Когда |
-|------|----------|--------|
+|------|----------|-------|
 | Fast | disabled | однофайловый фикс, скрипт без архитектуры |
 | Explore | high | read-only investigation |
 | Standard | high | multi-file feature |
 | Complex | max | debug, ambiguous, risky |
 
-Temperature в thinking modes почти не крутится; `reasoning_effort` — основной knob.
+В thinking modes главным регулятором остаётся `reasoning_effort`; temperature влияет заметнее в non-think.
 
 ### 3.2 Injection block `【思维模式要求】`
 
-DeepSeek V4 обучался на roleplay-style monologue. Инжекционный блок (см. `guides/deepseek-injection-block.md`) задаёт **инженерный** стиль thinking вместо «я думаю / хм / интересно».
+DeepSeek V4 хорошо реагирует на roleplay-style monologue. Для инженерной работы это вредно: thinking начинает наполняться «я думаю», «хм» и narrative drift.
 
-Наблюдение из internal stats (Hermes + DeepSeek V4 Flash): с injection-блоком качество agent-run выше, чем без — меньше narrative drift, больше actionable steps. Публично: используйте блок как optional prefix для engineering tasks, не как magic spell.
+Инжекционный блок из [`guides/deepseek-injection-block.md`](../guides/deepseek-injection-block.md) задаёт инженерный стиль thinking: constraints, trap detection, tool choice, execution steps. В internal stats по Hermes и DeepSeek V4 Flash с ним было меньше narrative drift и больше actionable steps.
 
-### 3.3 Prompt guide (3 правила)
+Публичный вывод простой: используйте блок как optional prefix для engineering tasks. Это не magic spell и не замена нормальной постановке задачи.
 
-1. Отдели **что** от **почему**.
-2. Перед отправкой: что сделать / где / что = done.
-3. Не мешай meta-формулировку с execution-сессией.
+### 3.3 Prompt guide
 
-Гайд короткий специально: DeepSeek лучше ест компактные task specs, чем эссе.
+Гайд для DeepSeek сводится к трём правилам:
+
+1. Отделить «что сделать» от «почему это нужно».
+2. Перед отправкой проверить, что есть действие, место и критерий готовности.
+3. Не смешивать meta-формулировку задачи с execution-сессией.
+
+DeepSeek лучше ест компактную task spec, чем длинное эссе с контекстом вперемешку.
 
 ---
 
 ## 4. GLM 5.2-specific
 
-### 4.1 Thinking не текстом
+### 4.1 Thinking не переключается текстом
 
-Фразы «подумай шаг за шагом» в system/user **не** управляют GLM thinking. Управление — API: `thinking.type` + `reasoning_effort`. Протокол это явно фиксирует, чтобы агент (и человек) не ждали эффекта от prose.
+Фразы вроде «подумай шаг за шагом» в system/user prompt не управляют GLM thinking. Управление идёт через API: `thinking.type` и `reasoning_effort`. Протокол фиксирует это явно, чтобы человек и агент не ждали эффекта от prose.
 
-### 4.2 Failure-mode anchors
+### 4.2 Anchors против failure modes
 
-v13 держит behavioral anchors против:
+`agent1st_v13-glm.md` держит anchors против нескольких сбоев:
 
-- **fabrication** — нет «я вижу / точно так» без evidence;
-- **tool passivity** — если можно вызвать tool, вызывай;
-- **long-session drift** — возвращайся к mission/gate на длинной сессии;
-- **mode collapse** — не залипать в один шаблон ответа.
+- fabrication: не писать «я вижу» или «точно так» без evidence;
+- tool passivity: если можно вызвать tool, вызывай tool;
+- long-session drift: возвращаться к mission и gate в длинной сессии;
+- mode collapse: не залипать в один шаблон ответа.
 
-### 4.3 Prompt guide (5 правил + meta template)
+### 4.3 Prompt guide
 
-GLM выигрывает от meta-сессии: сначала заполнить шаблон Task/Scope/…, потом чистый execution prompt. Это отражено в `guides/kak-pisat-zaprosy-dlya-glm-5.2.md`.
-
----
-
-## 5. Vision Bridge (optional, v36 / v13)
-
-Text-only модели + OpenCode:
-
-- **auto:** `opencode-eyesight` подменяет image overview текстом в request;
-- **manual:** `describe_image` для точного вопроса (STRONG evidence).
-
-Протокол требует attribution («per describe_image…») и запрещает «I can see…».  
-Без bridge — игнорируйте § Vision; core protocol не ломается.
+GLM выигрывает от meta-сессии: сначала заполнить Task / Context / Constraints / Done, затем отправить чистый execution prompt в новую сессию. Это описано в [`guides/kak-pisat-zaprosy-dlya-glm-5.2.md`](../guides/kak-pisat-zaprosy-dlya-glm-5.2.md).
 
 ---
 
-## 6. Чего здесь нет (намеренно)
+## 5. Vision Bridge
+
+Text-only модели в OpenCode могут получать visual evidence через optional Vision Bridge:
+
+- auto: `opencode-eyesight` добавляет image overview в request;
+- manual: `describe_image` отвечает на точный вопрос по изображению.
+
+Протокол требует attribution, например `per describe_image`, и запрещает писать `I can see` без источника. Без bridge секции Vision можно игнорировать; core protocol остаётся рабочим text-agent протоколом.
+
+---
+
+## 6. Чего здесь нет
 
 | Не публикуем | Почему |
 |--------------|--------|
-| Полный AGENT-PROTOCOL-CHANGELOG (v4→v36) | research noise для end-user |
-| Internal session logs / vetting reports | не product surface |
-| Все промежуточные agent versions | support surface = latest stable only |
-| Vision Bridge runtime | отдельный продукт/репозиторий |
+| Полный `AGENT-PROTOCOL-CHANGELOG` с v4 до v36 | research noise для end-user |
+| Internal session logs и vetting reports | это не product surface |
+| Все промежуточные agent versions | support surface должен указывать на latest stable |
+| Vision Bridge runtime | это отдельный продукт и отдельный репозиторий |
 
-Публичный пакет = **latest stable agents + human guides + why**.
+Публичный пакет - это latest stable agents, human guides и короткое объяснение дизайна.
 
 ---
 
 ## 7. Версии в этом релизе
 
 | Artifact | Version | Notes |
-|----------|---------|--------|
-| DeepSeek Pro agent | v36 | + optional vision bridge vs v35 |
-| DeepSeek Flash agent | v36 | + optional vision bridge vs v35 |
-| GLM agent | v13 | + optional vision bridge vs v12 |
+|----------|---------|-------|
+| DeepSeek Pro agent | v36 | optional Vision Bridge относительно v35 |
+| DeepSeek Flash agent | v36 | optional Vision Bridge относительно v35 |
+| GLM agent | v13 | optional Vision Bridge относительно v12 |
 | DeepSeek prompt guide | current | 3 rules |
-| GLM prompt guide | current | 5 rules + meta |
+| GLM prompt guide | current | 5 rules and meta |
 | Injection block | current | DeepSeek engineering thinking |
 
-Если нужна история эволюции — это research, не install path.
+История эволюции относится к research, а не к install path.
 
 ---
 
-## 8. Public bench (harness-bench-fast)
+## 8. Public bench
 
-Full-suite public scores (Agent1st lineage, OpenCode CLI):
+Full-suite public scores for Agent1st lineage in OpenCode CLI:
 
 | Measured protocol | Model | Score | Issue |
 |-------------------|-------|-------|-------|
-| v33 DeepSeek | DeepSeek V4 Flash | 311/313 (99.4%) | [#11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
-| v10 GLM | GLM 5.2 | 312/313 (99.7%) | [#12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+| agent1st_v33 | DeepSeek V4 Flash | 311/313 (99.4%) | [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
+| agent1st_v10-glm | GLM 5.2 | 312/313 (99.7%) | [issue #12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
 
-vs stock deepagents DeepSeek V4 Flash 266/298 (89.3%) in upstream README; vs openclaude GLM 5.2 309/313 (98.7%).
+Baseline comparison:
 
-Details and caveats (task-set 298 vs 313, v36/v13 not re-scored on full suite): [benchmarks.md](benchmarks.md).
+- deepagents stock on DeepSeek V4 Flash: 266/298 (89.3%) in upstream README;
+- openclaude on GLM 5.2: 309/313 (98.7%) cited in issue #12.
+
+Details and caveats: [benchmarks.md](benchmarks.md).

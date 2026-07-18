@@ -1,8 +1,8 @@
 # Agent1st Protocols
 
-🇷🇺 Full docs are in Russian: [README.md](README.md)
+Full documentation is in Russian: [README.md](README.md).
 
-Ready-to-use **agent system instructions** and **task-prompting guides** for:
+This repo publishes ready-to-use **agent system prompts** and task-prompting guides for DeepSeek V4 and GLM 5.2.
 
 | Model | Protocol | File |
 |-------|----------|------|
@@ -10,24 +10,31 @@ Ready-to-use **agent system instructions** and **task-prompting guides** for:
 | **DeepSeek V4 Flash** | Agent1st v36 | [`agents/deepseek/agent1st_v36-flash.md`](agents/deepseek/agent1st_v36-flash.md) |
 | **GLM 5.2** | Agent1st v13 | [`agents/glm/agent1st_v13-glm.md`](agents/glm/agent1st_v13-glm.md) |
 
-This is **not** a skills repo. Skills live in [opencode-skills](https://github.com/dimkurilo/opencode-skills). This repo is **system prompts / agent protocols** plus human-facing prompt guides.
+This is not a skills repository. Skills live in [opencode-skills](https://github.com/dimkurilo/opencode-skills). Agent1st protocols are system prompts plus human-facing guides for writing agent tasks.
 
-## Benchmark results (harness-bench-fast)
+## Benchmark results
 
-Public runs on [ai-forever/harness-bench-fast](https://github.com/ai-forever/harness-bench-fast) (mechanical verify, OpenCode CLI + Agent1st):
+Public [ai-forever/harness-bench-fast](https://github.com/ai-forever/harness-bench-fast) runs use mechanical verification, not LLM-as-judge. Harness: OpenCode CLI with Agent1st.
 
 | Protocol measured | Model | Result | Issue |
 |-------------------|-------|--------|-------|
-| agent1st_v33 | DeepSeek V4 Flash | **311/313 (99.4%)** | [#11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
-| agent1st_v10-glm | GLM 5.2 | **312/313 (99.7%)** | [#12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+| agent1st_v33 | DeepSeek V4 Flash | **311/313 (99.4%)** | [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
+| agent1st_v10-glm | GLM 5.2 | **312/313 (99.7%)** | [issue #12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
 
-Baselines (same models, different harness/protocol): deepagents DeepSeek V4 Flash **266/298 (89.3%)** in [upstream README](https://github.com/ai-forever/harness-bench-fast#current-results); openclaude GLM 5.2 **309/313 (98.7%)** cited in #12.
+Baselines for the same models:
 
-Published files here are **v36 / v13** (successors of the measured v33 / v10). Full re-bench of exact v36/v13 file bytes on 313 tasks is not claimed yet — see [docs/benchmarks.md](docs/benchmarks.md).
+| Harness / setup | Model | Result | Source |
+|-----------------|-------|--------|--------|
+| deepagents stock | DeepSeek V4 Flash | 266/298 (89.3%) | [upstream README](https://github.com/ai-forever/harness-bench-fast#current-results) |
+| OpenCode CLI with Agent1st v33 | DeepSeek V4 Flash | **311/313 (99.4%)** | [issue #11](https://github.com/ai-forever/harness-bench-fast/issues/11) |
+| openclaude | GLM 5.2 | 309/313 (98.7%) | cited in [issue #12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
+| OpenCode CLI with Agent1st v10-glm | GLM 5.2 | **312/313 (99.7%)** | [issue #12](https://github.com/ai-forever/harness-bench-fast/issues/12) |
 
-## Quick start
+Published files are `v36` and `v13`, lineage successors of the measured `v33` and `v10`. The exact files in this tree have not yet been claimed as a public 313-task full-suite re-bench. Details: [docs/benchmarks.md](docs/benchmarks.md).
 
-OpenCode loads **each** `.md` in `~/.config/opencode/agents/` as a **separate** agent. Keep distinct filenames — do **not** rename all three to one `agent1st.md`.
+## Install
+
+OpenCode loads each `.md` file under `~/.config/opencode/agents/` as a separate agent. Keep distinct filenames.
 
 ```bash
 mkdir -p ~/.config/opencode/agents
@@ -37,24 +44,12 @@ cp agents/deepseek/agent1st_v36-flash.md ~/.config/opencode/agents/
 cp agents/glm/agent1st_v13-glm.md        ~/.config/opencode/agents/
 ```
 
-| File | Agent |
-|------|--------|
-| `agent1st_v36-pro.md` | DeepSeek V4 Pro |
-| `agent1st_v36-flash.md` | DeepSeek V4 Flash |
-| `agent1st_v13-glm.md` | GLM 5.2 |
+Personal subfolders such as `A/` or `M/` are optional local organization. They are not required by OpenCode or this guide.
 
-Personal subfolders (`A/`, `M/`, …) are optional organization — not required by OpenCode or this guide.
+For other runtimes, paste the file body as a system prompt and adapt the frontmatter.
 
-Install only the one(s) you need. Frontmatter is OpenCode-oriented; adapt for other CLIs. Write tasks with the matching guide under `guides/`.
+## Notes
 
-## Core vs Vision Bridge
+Core protocol works without vision. `v36` and `v13` include optional Vision Bridge sections for OpenCode text-only models: `opencode-eyesight` and `describe_image`.
 
-Core protocol works without vision. v36/v13 include optional Vision Bridge sections (`opencode-eyesight` + `describe_image`) for OpenCode text-only models — ignore or strip them if you do not use that bridge.
-
-## Why it works
-
-Short design rationale: [docs/why-it-works.md](docs/why-it-works.md) (Russian).
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+Design rationale: [docs/why-it-works.md](docs/why-it-works.md). License: [MIT](LICENSE).
